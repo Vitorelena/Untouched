@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <title>Informe seu email</title>
+    <style>
+        /* estilo básico igual do outro */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: white;
+            padding: 30px 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            width: 350px;
+            text-align: center;
+        }
+        input[type="email"] {
+            width: 100%;
+            padding: 12px 15px;
+            margin: 12px 0 20px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .msg-error {
+            color: #d9534f;
+            margin-bottom: 15px;
+        }
+        .msg-success {
+            color: #4CAF50;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+       <form method="POST" action="{{ url_for('emailc.pedir_email') }}">
+    {% if clientes %}
+        <label for="cliente_id">Selecione o cliente:</label>
+        <select name="cliente_id" required>
+            <option value="">-- Escolha o cliente --</option>
+            {% for cliente in clientes %}
+                <option value="{{ cliente.id }}">{{ cliente.nome }}</option>
+            {% endfor %}
+        </select>
+    {% endif %}
+
+    <h1>Informe seu email</h1>
+    <input type="email" name="email" placeholder="Digite seu email" required />
+    <button type="submit">Enviar código</button>
+        </form> 
+
+    </div>
+</body>
+</html>

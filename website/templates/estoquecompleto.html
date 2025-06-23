@@ -1,0 +1,100 @@
+{% extends 'layout.html' %}
+
+{% block title %}Visualizar Estoque Completo{% endblock %}
+{% block alert %}{% endblock %}
+
+{% block content %}
+<style>
+ /* ATENÇÃO: Mova este bloco de estilo para o seu layout.html */
+ .image-cell .product-image {
+    max-width: 100px;
+    max-height: 80px;
+    width: auto;
+    height: auto;
+    display: block;
+    margin: auto;
+    object-fit: contain;
+ }
+</style>
+<div class="container mt-5">
+     <h2 class="mb-4 text-center">Estoque Completo da Loja</h2>
+
+     <div class="table-responsive">
+     <table class="table table-striped table-hover">
+    <thead class="thead-dark">
+         <tr>
+             <th>ID Estoque</th>
+             <th>ID Produto</th>
+            <th>Nome do Produto</th>
+             <th>Categoria</th>
+             <th>Quantidade</th>
+            <th>Preço Unitário</th>
+            {# AGORA COM CONDICIONAL: Valor Total do Item só visível se show_valor_total for True #}
+            {% if show_valor_total %} 
+                <th>Valor Total do Item</th>
+            {% endif %}
+            <th>Imagem</th>
+            </tr>
+     </thead>
+    <tbody>
+     {% for item_estoque in itens_estoque %}
+    <tr>
+         <td>{{ item_estoque.id }}</td>
+        <td>{{ item_estoque.produto.id }}</td>
+         <td>{{ item_estoque.produto.nome }}</td>
+        <td>{{ item_estoque.produto.categoria }}</td>
+        <td>{{ item_estoque.quantidade }}</td>
+        <td>R$ {{ "%.2f" | format(item_estoque.produto.preco | float) }}</td>
+         {# AGORA COM CONDICIONAL: Valor Total do Item só visível se show_valor_total for True #}
+         {% if show_valor_total %} 
+        <td>R$ {{ "%.2f" | format(item_estoque.valor_total | float) }}</td>
+        {% endif %}
+         <td class="image-cell">
+         {% if item_estoque.produto.imagem_url %}
+         <img src="{{ item_estoque.produto.imagem_url }}" alt="{{ item_estoque.produto.nome }}" class="product-image">
+         {% else %}
+        <img src="{{ url_for('static', filename='images/default_product_image.png') }}" alt="Sem imagem" class="product-image">
+         {% endif %}
+        </td>
+     </tr>
+    {% else %}
+     <tr>
+         {# Ajuste o colspan: 7 se não mostra valor total (e Staff), 8 se mostra (Gerente) #}
+        <td colspan="{% if show_valor_total %}8{% else %}7{% endif %}" class="text-center">Nenhum item no estoque para exibir.</td>
+    </tr>
+     {% endfor %}
+     </tbody>
+    </table>
+ </div>
+
+     {% if show_valor_total %} {# ESTE BLOCO CONTINUA CONDICIONAL PARA O VALOR TOTAL GERAL #}
+    <div class="row mt-4 justify-content-end">
+     <div class="col-md-4">
+     <div class="card bg-light">
+    <div class="card-body">
+     <h5 class="card-title">Valor Total do Estoque Geral:</h5>
+    <p class="card-text h4 text-primary">R$ {{ "%.2f" | format(valor_total_geral | float) }}</p>
+     </div>
+     </div>
+     </div>
+     </div>
+     {% endif %}
+
+     <div class="text-center mt-5">
+    {# Link de retorno inteligente baseado no tipo de usuário #}
+     {% if current_user.is_authenticated %}
+         {% if current_user.tipo_usuario >= 3 %} {# Funcionários #}
+            <a href="{{ url_for('homeC.home_funcionario') }}" class="btn btn-secondary">Voltar ao Painel do Funcionário</a>
+         {% elif current_user.tipo_usuario == 2 %} {# Clientes #}
+            <a href="{{ url_for('homeC.home_cliente') }}" class="btn btn-secondary">Voltar ao Painel do Cliente</a>
+     {% else %} {# Outros casos #}
+         <a href="{{ url_for('homeC.home') }}" class="btn btn-secondary">Voltar à Home</a>
+    {% endif %}
+     {% else %} {# Caso nunca deveria acontecer por @login_required, mas por segurança #}
+         <a href="{{ url_for('homeC.home') }}" class="btn btn-secondary">Voltar à Home</a>
+    {% endif %}
+     <button onclick="window.print()" class="btn btn-dark">Imprimir Estoque</button>
+     </div>
+
+</div>
+{% endblock %}

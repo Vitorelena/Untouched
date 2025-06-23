@@ -1,0 +1,68 @@
+{% extends 'layout.html' %}
+
+{% block title %}Gerenciar Funcionários{% endblock %}
+{% block alert %}
+    {# Mensagens print do Flask (o bloco 'alert' já está no layout.html) #}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">Lista de Funcionários</h2>
+
+    {# Botões de Gerenciamento de Funcionários (apenas para CEO) #}
+    {% if current_user.is_authenticated and current_user.nivel == 4 %} {# Apenas CEO #}
+    <div class="text-center mb-4">
+        <a href="{{ url_for('homeC.promover_funcionario_page') }}" class="btn btn-warning btn-lg mr-2">Promover Funcionários</a>
+        <a href="{{ url_for('homeC.desligar_funcionario_page') }}" class="btn btn-danger btn-lg">Desligar Funcionários</a> {# NOVO BOTÃO #}
+    </div>
+    {% endif %}
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Login</th>
+                    <th>CPF</th>
+                    <th>Matrícula</th>
+                    <th>Nível</th>
+                    <th>Cargo</th>
+                    <th>Vendas Realizadas</th>
+                    {# A coluna 'Ações' para editar/excluir individualmente não está aqui #}
+                </tr>
+            </thead>
+            <tbody>
+                {% for funcionario in funcionarios %}
+                <tr>
+                    <td>{{ funcionario.id }}</td>
+                    <td>{{ funcionario.nome }}</td>
+                    <td>{{ funcionario.login }}</td>
+                    <td>{{ funcionario.cpf }}</td>
+                    <td>{{ funcionario.matricula if funcionario.matricula is not none else 'N/A' }}</td>
+                    <td>{{ funcionario.nivel if funcionario.nivel is not none else 'N/A' }}</td>
+                    <td>
+                        {% if funcionario.tipo_usuario == 4 %}Staff
+                        {% elif funcionario.tipo_usuario == 5 %}SubGerente
+                        {% elif funcionario.tipo_usuario == 6 %}Gerente
+                        {% elif funcionario.tipo_usuario == 7 %}CEO
+                        {% else %}Func. Desconhecido ({{ funcionario.tipo_usuario }})
+                        {% endif %}
+                    </td>
+                    <td>{{ funcionario.numero_vendas if funcionario.numero_vendas is not none else '0' }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="8" class="text-center">Nenhum funcionário cadastrado no sistema.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="text-center mt-4">
+        <a href="{{ url_for('homeC.home_funcionario') }}" class="btn btn-secondary">Voltar ao Painel</a>
+    </div>
+
+</div>
+{% endblock %}

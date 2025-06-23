@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<style>
+        /* Estilos do Layout Geral */
+        body {
+            display: flex; /* Usa flexbox para o layout principal */
+            min-height: 100vh; /* Garante que o body ocupa a altura total da viewport */
+            margin: 0;
+            background-color: #eeeef0c5; /* Cor de fundo do seu body */
+        }
+
+        .sidebar {
+            width: 250px; /* Largura do menu lateral */
+            flex-shrink: 0; /* Impede que o sidebar encolha */
+            background-color: #333360; /* Cor de fundo do seu navbar */
+            color: white;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.5); /* Sombra para destacá-lo */
+            position: sticky; /* Fixa o sidebar na tela ao rolar */
+            top: 0; /* Fixa no topo */
+            height: 100vh; /* Ocupa a altura total da viewport */
+            overflow-y: auto; /* Adiciona scroll se o conteúdo for muito grande */
+            display: flex; /* Flexbox para alinhar itens do sidebar verticalmente */
+            flex-direction: column;
+        }
+
+        .sidebar .navbar-brand,
+        .sidebar .nav-link {
+            color: white !important; /* Garante a cor do texto */
+            padding: 10px 15px;
+            display: flex; /* Para alinhar logo e texto */
+            align-items: center;
+            text-decoration: none; /* Remover sublinhado de links */
+        }
+
+        .sidebar .navbar-brand img {
+            margin-right: 10px; /* Espaçamento entre logo e texto */
+        }
+
+        .main-content-area { /* Novo contêiner para a topbar e o content-wrapper */
+            flex-grow: 1; /* Faz esta área ocupar o espaço restante */
+            display: flex;
+            flex-direction: column; /* Para empilhar topbar e content-wrapper verticalmente */
+        }
+
+        .topbar {
+            background-color: #4a4a80; /* Cor de fundo da sua barra superior */
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between; /* Espaço entre Home e mensagem de boas-vindas */
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Sombra para destacá-lo */
+            height: 60px; /* Altura fixa para a topbar */
+            flex-shrink: 0; /* Impede que a topbar encolha */
+        }
+
+        .topbar .welcome-message {
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+
+        .topbar .home-link {
+            color: white !important;
+            text-decoration: none;
+            font-size: 1.2em; /* Tamanho do ícone */
+            display: flex;
+            align-items: center;
+        }
+
+        .topbar .home-link i {
+            margin-right: 5px;
+        }
+
+        .content-wrapper {
+            flex-grow: 1; /* Faz o conteúdo principal ocupar o espaço restante */
+            padding: 20px;
+        }
+
+        /* Oculta o navbar-toggler, pois o menu estará sempre aberto */
+        .navbar-toggler {
+            display: none !important;
+        }
+
+        /* Remova ou ajuste o navbar superior se ele não for mais necessário */
+        .navbar-top {
+             display: none;
+        }
+
+        /* Estilos da Tabela de Produtos em Estoque */
+        .image-cell {
+            width: 80px; /* Largura desejada para a célula da imagem */
+            height: 80px; /* Altura desejada para a célula da imagem */
+            text-align: center;
+            vertical-align: middle;
+            border: 1px solid #ddd; /* Opcional: para visualizar a célula */
+            padding: 5px; /* Opcional: espaçamento interno */
+        }
+
+        .product-image {
+            max-width: 100%; /* Garante que a imagem não seja maior que a largura da célula */
+            max-height: 100%; /* Garante que a imagem não seja maior que a altura da célula */
+            width: auto; /* Mantém a proporção original da imagem */
+            height: auto; /* Mantém a proporção original da imagem */
+            display: block; /* Remove espaços extras abaixo da imagem */
+            margin: auto; /* Centraliza a imagem dentro da célula */
+            object-fit: contain; /* Garante que toda a imagem caiba dentro da célula, mantendo a proporção */
+        }
+
+        /* Estilos para o Modal (Pop-up de Login/Boas-vindas) */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px); /* Efeito de blur no fundo */
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .modal-content h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .modal-content button {
+            margin: 10px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .modal-content .btn-login {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .modal-content .btn-guest {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        /* Estilos para a Grade de Produtos (Cards) */
+        .product-grid {
+            display: grid;
+            /* Cria colunas responsivas: preenche automaticamente com cards de 280px */
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px; /* Espaçamento entre os cards */
+            max-width: 1200px; /* Largura máxima da grade, centraliza */
+            margin: 0 auto;
+        }
+
+        /* Estilos para cada card de produto */
+        .product-card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
+            overflow: hidden; /* Garante que a imagem não transborde os cantos arredondados */
+            text-align: center;
+            display: flex; /* Usa flexbox para organizar o conteúdo verticalmente */
+            flex-direction: column;
+            justify-content: space-between; /* Empurra o preço para o final do card */
+            transition: transform 0.2s ease-in-out; /* Efeito hover */
+            height: 100%; /* Garante que todos os cards na linha tenham a mesma altura */
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px); /* Efeito de elevação ao passar o mouse */
+        }
+
+        /* Estilos para a imagem do produto no card */
+        .product-card img.product-image { /* Especifique a classe para não conflitar com a da tabela */
+            width: 100%;
+            height: 200px; /* Altura fixa para todas as imagens dos cards */
+            object-fit: cover; /* Corta a imagem para preencher o espaço sem distorcer */
+            display: block; /* Remove espaço extra abaixo da imagem */
+            border-bottom: 1px solid #eee; /* Linha sutil abaixo da imagem */
+        }
+
+        /* Estilos para o conteúdo textual do card */
+        .product-card .content {
+            padding: 15px;
+            text-align: left; /* Alinha o texto à esquerda dentro do conteúdo */
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .product-card h5.card-title { /* Use h5.card-title do Bootstrap */
+            font-size: 1.2em;
+            margin-top: 0;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        /* Estilos para a descrição do produto */
+        .product-card p.description {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 10px;
+            line-height: 1.4;
+            max-height: 3.8em; /* Limita a altura da descrição para 3 linhas aprox. */
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 3; /* Limita a 3 linhas */
+            -webkit-box-orient: vertical;
+        }
+
+        /* Estilos para o preço */
+        .product-card .price {
+            font-size: 1.4em;
+            color: #007bff;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        /* Estilos para a categoria */
+        .product-card .category {
+            font-size: 0.8em;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        /* Estilos para o formulário de adicionar ao carrinho */
+        .add-to-cart-form {
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            align-items: flex-start;
+        }
+
+        .add-to-cart-form input[type="number"] {
+            width: 80px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .add-to-cart-form input[type="number"]::-webkit-outer-spin-button,
+        .add-to-cart-form input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .add-to-cart-button {
+            background-color: #28a745;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background-color 0.2s ease-in-out;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .add-to-cart-button:hover {
+            background-color: #218838;
+        }
+
+        /* Estilos para o link "Criar produto" (se mantiver ele fora do sidebar_specific_content) */
+        .create-product-link {
+            display: block;
+            text-align: center;
+            margin-top: 30px;
+            font-size: 1.1em;
+            color: #007bff;
+            text-decoration: none;
+            padding: 10px 20px;
+            border: 1px solid #007bff;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+            max-width: 200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .create-product-link:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        /* Responsividade básica para telas menores */
+        @media (max-width: 768px) {
+            .product-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+        }
+
+        @media (max-width: 480px) {
+            .product-grid {
+                grid-template-columns: 1fr;
+            }
+            .product-card {
+                margin-left: 10px;
+                margin-right: 10px;
+            }
+        }
+    </style>
+
+{% extends "layout.html" %}
+
+{% block title %}Untouched{% endblock %}
+{% block alert %}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h3>Produtos em destaque</h3>
+    <div id="carouselExampleIndicators" class="carousel slide w-100" data-ride="carousel" style="max-height: 400px; overflow: hidden; border: 1px solid #3b3636;">
+        <ol class="carousel-indicators">
+            <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+            <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+            <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+        </ol>
+        <div class="carousel-inner" style="max-height: 400px;">
+            <div class="carousel-item active" style="max-height: 400px">
+                <img class="d-block w-100" src="{{ url_for('static', filename='images/imagem1.png') }}" alt="Primeiro Slide" style="object-fit: contain; max-height: 400px;">
+            </div>
+            <div class="carousel-item" style="max-height: 400px;">
+                <img class="d-block w-100" src="{{ url_for('static', filename='images/imagem2.png') }}" alt="Segundo Slide" style="object-fit: contain; max-height: 400px;">
+            </div>
+            <div class="carousel-item" style="max-height: 400px;">
+                <img class="d-block w-100" src="{{ url_for('static', filename='images/imagem3.png') }}" alt="Terceiro Slide" style="object-fit: contain; max-height: 400px;">
+            </div>
+        </div>
+        <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">Anterior</span>
+        </a>
+        <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only">Próximo</span>
+        </a>
+    </div>
+
+    {% if current_user.is_authenticated %}
+    <div class="row mt-4 justify-content-around align-items-start">
+        <div class="col-md-6 text-center">
+            <h3>Nossas unidades</h3>
+            <div id="map-container" style="height: 400px; width: 100%;">
+                {{ map_html | safe }}
+            </div>
+        </div>
+        <div class="col-md-6" style="padding-left: 130px;">
+            <h3 class="text-center" style="margin-bottom: 15px;">Categorias</h3>
+            <ul class="list-unstyled">
+                <li style="margin-bottom: 5px;">
+                    <div style="display: flex; align-items: center;">
+                        <img src="{{ url_for('static', filename='images/icon1.png') }}" alt="Vestuário feminino" style="width: 32px; height: 32px; vertical-align: middle; margin-right: 10px;">
+                        <a href="{{ url_for('homeC.home', categoria_id=1) }}">Vestuário feminino</a>
+                    </div>
+                </li>
+                <li style="margin-bottom: 5px;">
+                    <div style="display: flex; align-items: center;">
+                        <img src="{{ url_for('static', filename='images/icon2.png') }}" alt="Vestuário masculino" style="width: 32px; height: 32px; vertical-align: middle; margin-right: 10px;">
+                        <a href="{{ url_for('homeC.home', categoria_id=2) }}">Vestuário masculino</a>
+                    </div>
+                </li>
+                <li style="margin-bottom: 5px;">
+                    <div style="display: flex; align-items: center;">
+                        <img src="{{ url_for('static', filename='images/icon3.png') }}" alt="Calçados" style="width: 32px; height: 32px; vertical-align: middle; margin-right: 10px;">
+                        <a href="{{ url_for('homeC.home', categoria_id=3) }}">Calçados</a>
+                    </div>
+                </li>
+                <li style="margin-bottom: 5px;">
+                    <div style="display: flex; align-items: center;">
+                        <img src="{{ url_for('static', filename='images/icon4.png') }}" alt="Equipamentos esportivos" style="width: 32px; height: 32px; vertical-align: middle; margin-right: 10px;">
+                        <a href="{{ url_for('homeC.home', categoria_id=4) }}">Equipamentos esportivos</a>
+                    </div>
+                </li>
+                <li style="margin-bottom: 5px;">
+                    <div style="display: flex; align-items: center;">
+                        <img src="{{ url_for('static', filename='images/icon5.png') }}" alt="Suplementos" style="width: 32px; height: 32px; vertical-align: middle; margin-right: 10px;">
+                        <a href="{{ url_for('homeC.home', categoria_id=5) }}">Suplementos</a>
+                    </div>
+                </li>
+                <li style="margin-bottom: 5px;">
+                    <div style="display: flex; align-items: center;">
+                        <img src="{{ url_for('static', filename='images/icon6.png') }}" alt="Outros" style="width: 32px; height: 32px; vertical-align: middle; margin-right: 10px;">
+                        <a href="{{ url_for('homeC.home', categoria_id=6) }}">Outros</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    {%if current_user.tipo_usuario >= 3%}
+    <div class="col-md-12 mt-5"> {# Adicionei mt-5 para espaçamento do conteúdo acima #}
+        <h2>Produtos em Estoque (Tabela)</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Preço</th>
+                    <th>Quantidade em Estoque</th>
+                    <th>Imagem</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for produto in produtos_estoque_home %} {# Assumindo que esta variável vem do controller #}
+                <tr>
+                    <td>{{ produto.nome }}</td>
+                    <td>{{ produto.preco }}</td>
+                    <td>{{ produto.estoque.quantidade }}</td>
+                    <td class="image-cell">
+                        {% if produto.imagem_url %}
+                            <img src="{{ produto.imagem_url }}" alt="{{ produto.nome }}" class="product-image">
+                        {% else %}
+                            <img src="{{ url_for('static', filename='images/default_product_image.png') }}" alt="Sem imagem" class="product-image">
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4">Nenhum produto em estoque no momento.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {%endif%}
+    <div class="col-md-12 mt-5"> {# Novo container e espaçamento #}
+        <h2 class="text-center mb-4">Confira Nossos Produtos</h2>
+        <div class="product-grid">
+            {% for produto in produtos_estoque_home %} {# Assumindo que 'produtos' é a lista completa do controller #}
+            <div class="product-card">
+                {% if produto.imagem_url %}
+                    <img src="{{ produto.imagem_url }}" alt="{{ produto.nome }}" class="product-image">
+                {% else %}
+                    <img src="{{ url_for('static', filename='images/default_product_image.png') }}" alt="Sem imagem" class="product-image">
+                {% endif %}
+
+                <div class="content">
+                    <h5 class="card-title">{{ produto.nome }}</h5>
+                    <p class="description">{{ produto.descricao | truncate(50) }}</p>
+                    <p class="price">R$ {{ "%.2f" | format(produto.preco | float) }}</p>
+                    <p class="category">Categoria: {{ produto.categoria }}</p> {# Exibe a categoria do produto #}
+
+                    <form action="{{ url_for('vendaC.adicionar_ao_carrinho', produto_id=produto.id) }}" method="POST" class="add-to-cart-form mt-auto">
+                        <input type="number" name="quantidade" value="1" min="1" max="{{ produto.estoque.quantidade if produto.estoque else 1 }}" title="Quantidade">
+                        <button type="submit" class="add-to-cart-button">Adicionar ao Carrinho</button>
+                    </form>
+                </div>
+            </div>
+            {% else %}
+            <p style="text-align: center; grid-column: 1 / -1;">Nenhum produto encontrado para exibir.</p>
+            {% endfor %}
+        </div>
+        <p class="text-center mt-4"><a href="{{ url_for('vendaC.carrinho') }}" class="btn btn-primary">Ver Carrinho</a></p>
+    </div>
+
+    {% endif %} {# Fim da condição current_user.is_authenticated #}
+</div>
+
+{# O modal de login permanece inalterado #}
+{% if not current_user.is_authenticated %}
+<div id="loginModal" class="modal-overlay">
+    <div class="modal-content">
+        <h2>Bem-vindo(a) à Untouched!</h2>
+        <p>Para aproveitar todas as funcionalidades, como visualizar produtos e unidades, por favor, faça login ou continue como convidado.</p>
+        <a href="{{ url_for('loginC.login_page') }}" class="btn btn-login">Fazer Login/Cadastar</a>
+        <button class="btn btn-guest" onclick="closeModal()">Continuar como Convidado</button>
+    </div>
+</div>
+
+<script>
+    function closeModal() {
+        document.getElementById('loginModal').style.display = 'none';
+    }
+</script>
+{% endif %} {# Fim da condição not current_user.is_authenticated #}
+
+{% endblock %}
+</html>

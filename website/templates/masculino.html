@@ -1,0 +1,248 @@
+{% extends "layout.html" %}
+{% block title %}Vestuario Masculino{% endblock %}
+{%block content%}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Vestuario Masculino</title>
+<style>
+    /* Estilos básicos para o corpo e título (copiados do suplementos.html para consistência) */
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f2f5;
+        margin: 0;
+        padding: 20px;
+    }
+
+    h1 {
+        color: #333;
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    /* Estilos para a grade de produtos */
+    .product-grid {
+        display: grid;
+        /* Cria colunas responsivas: preenche automaticamente com cards de 280px */
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px; /* Espaçamento entre os cards */
+        max-width: 1200px; /* Largura máxima da grade, centraliza */
+        margin: 0 auto;
+    }
+
+    /* Estilos para cada card de produto */
+    .product-card {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
+        overflow: hidden; /* Garante que a imagem não transborde os cantos arredondados */
+        text-align: center;
+        display: flex; /* Usa flexbox para organizar o conteúdo verticalmente */
+        flex-direction: column;
+        justify-content: space-between; /* Empurra o preço para o final do card */
+        transition: transform 0.2s ease-in-out; /* Efeito hover */
+    }
+
+    .product-card:hover {
+        transform: translateY(-5px); /* Efeito de elevação ao passar o mouse */
+    }
+
+    /* Estilos para a imagem do produto */
+    .product-card img {
+        width: 100%;
+        height: 250px; /* Altura fixa para todas as imagens */
+        object-fit: cover; /* Corta a imagem para preencher o espaço sem distorcer */
+        display: block; /* Remove espaço extra abaixo da imagem */
+        border-bottom: 1px solid #eee; /* Linha sutil abaixo da imagem */
+    }
+
+    /* Estilos para a barra de promoção (opcional, se você quiser adicionar no futuro) */
+    .promo-bar {
+        background-color: #333;
+        color: #fff;
+        padding: 5px 10px;
+        font-size: 0.8em;
+        font-weight: bold;
+        border-radius: 4px;
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        z-index: 10;
+    }
+    .product-card {
+        position: relative;
+    }
+
+    /* Estilos para o conteúdo textual do card */
+    .product-card .content {
+        padding: 15px;
+        text-align: left; /* Alinha o texto à esquerda dentro do conteúdo */
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    /* Linha que contém nome (sem avaliação) */
+    .product-info-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 5px;
+    }
+
+    .product-card h2 {
+        font-size: 1.2em;
+        margin-top: 0;
+        margin-bottom: 5px;
+        color: #333;
+    }
+
+    /* Estilos para a descrição do produto */
+    .product-card p.description {
+        font-size: 0.9em;
+        color: #666;
+        margin-bottom: 10px;
+        line-height: 1.4;
+        max-height: 3.8em; /* Limita a altura da descrição para 3 linhas aprox. */
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        
+        -webkit-box-orient: vertical;
+    }
+
+    /* Estilos para o preço */
+    .product-card .price {
+        font-size: 1.4em;
+        color: #007bff;
+        font-weight: bold;
+        margin-top: 10px;
+    }
+
+    /* Estilos para a categoria */
+    .product-card .category {
+        font-size: 0.8em;
+        color: #888;
+        margin-top: 5px;
+    }
+
+    /* Estilos para o formulário de adicionar ao carrinho */
+    .add-to-cart-form {
+        margin-top: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        align-items: flex-start;
+    }
+
+    .add-to-cart-form input[type="number"] {
+        width: 80px;
+        padding: 5px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        text-align: center;
+        
+    }
+
+    .add-to-cart-form input[type="number"]::-webkit-outer-spin-button,
+    .add-to-cart-form input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    .add-to-cart-button {
+        background-color: #28a745;
+        color: white;
+        padding: 8px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 0.9em;
+        transition: background-color 0.2s ease-in-out;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .add-to-cart-button:hover {
+        background-color: #218838;
+    }
+
+    /* Estilos para o link "Criar produto" */
+    .create-product-link {
+        display: block;
+        text-align: center;
+        margin-top: 30px;
+        font-size: 1.1em;
+        color: #007bff;
+        text-decoration: none;
+        padding: 10px 20px;
+        border: 1px solid #007bff;
+        border-radius: 5px;
+        transition: background-color 0.3s, color 0.3s;
+        max-width: 200px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .create-product-link:hover {
+        background-color: #007bff;
+        color: #fff;
+    }
+
+    /* Responsividade básica para telas menores */
+    @media (max-width: 768px) {
+        .product-grid {
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        }
+    }
+
+    @media (max-width: 480px) {
+        .product-grid {
+            grid-template-columns: 1fr;
+        }
+        .product-card {
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+    }
+
+</style>
+</head>
+<body>
+    
+<h1>Lista de Produtos de Vestuário Masculino</h1>
+
+<div class="product-grid">
+    {% for produto in produtos %}
+    <div class="product-card">
+        {% if produto.imagem_url and ('http' in produto.imagem_url or '/' in produto.imagem_url) %}
+            <img src="{{ produto.imagem_url }}" alt="{{ produto.nome }}">
+        {% else %}
+            <img src="{{ url_for('static', filename='images/' + produto.imagem_url) }}" alt="{{ produto.nome }}">
+        {% endif %}
+
+        <div class="content">
+            <div class="product-info-row">
+                <h2>{{ produto.nome }}</h2>
+            </div>
+            <p class="description">{{ produto.descricao }}</p>
+            <p class="price">R$ {{ "%.2f" | format(produto.preco | float) }}</p>
+            {% if produto.categoria %}
+            <p class="category">Categoria: {{ produto.categoria }}</p>
+            {% endif %}
+            
+            <form action="{{ url_for('vendaC.adicionar_ao_carrinho', produto_id=produto.id) }}" method="POST" class="add-to-cart-form">
+                <input type="number" name="quantidade" value="1" min="1" max="{{ produto.estoque.quantidade if produto.estoque else 100 }}" title="Quantidade">
+                <button type="submit" class="add-to-cart-button">Adicionar ao Carrinho</button>
+            </form>
+        </div>
+    </div>
+    {% else %}
+    <p style="text-align: center; grid-column: 1 / -1;">Nenhum produto de vestuário masculino encontrado.</p>
+    {% endfor %}
+</div>
+
+<a href="{{ url_for('productC.criar_produto') }}" class="create-product-link">Criar novo produto</a>
+{% endblock %}
+</body>
+</html>

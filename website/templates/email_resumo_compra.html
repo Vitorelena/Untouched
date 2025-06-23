@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Resumo da Compra</title>
+</head>
+<body>
+    <h2>Compra #{{ venda.id }} confirmada!</h2>
+    <p>Data da compra: {{ venda.data_venda.strftime('%d/%m/%Y %H:%M') }}</p>
+    <h3>Itens Comprados:</h3>
+    <ul>
+        {% for item in dados %}
+            <li><strong>{{ item.nome }}</strong> - Quantidade: {{ item.quantidade }} - Preço unitário: R$ {{ "%.2f"|format(item.preco_unitario) }} - Subtotal: R$ {{ "%.2f"|format(item.subtotal) }}</li>
+        {% endfor %}
+    </ul>
+    <p><strong>Total:</strong> R$ {{ "%.2f"|format(total) }}</p>
+</body>
+</html>

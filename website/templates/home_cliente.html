@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+
+{% block title %}Painel do Cliente{% endblock %}
+{%block alert%}{%endblock%}
+
+{# Bloco para conteúdo específico da sidebar para clientes #}
+{% block sidebar_specific_content %}    
+    <a class="nav-item nav-link" href="{{ url_for('clienteC.lista_pedidos') }}">Meus Pedidos</a>
+    <a class="nav-item nav-link" href="{{ url_for('clienteC.historico_compras') }}">Minhas Compras</a>
+    {% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Bem-vindo(a), {{ current_user.nome }}!</h1>
+    <p>Este é o seu painel de cliente. Aqui você pode acompanhar suas atividades e gerenciar suas preferências.</p>
+
+    <div class="row mt-4">
+        {# Coluna Esquerda para o Relatório do Cliente #}
+        <div class="col-md-6">
+            <div class="card shadow-sm"> {# Usamos um card do Bootstrap para o bloco #}
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Seu Relatório de Atividade</h4>
+                </div>
+                <div class="card-body">
+                    {# O relatório gerado pela função Python. Usamos <pre> para manter as quebras de linha. #}
+                    <pre style="white-space: pre-wrap; word-wrap: break-word;">{{ relatorio }}</pre>
+                </div>
+            </div>
+        </div>
+
+        {# Coluna Direita (para preencher o espaço vazio com ações do cliente) #}
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h4 class="mb-0">Ações Rápidas do Cliente</h4>
+                </div>
+                <div class="card-body">
+                    <p>Gerencie sua conta e histórico de compras:</p>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><a  href="{{ url_for('clienteC.editar_cliente', usuario_id=current_user.id) }}">Editar meus dados</a></li>                       
+                        <li class="list-group-item"><a href="{{ url_for('clienteC.historico_compras') }}">Ver Histórico de Compras</a></li>
+                        <li class="list-group-item"><a href="{{ url_for('clienteC.lista_pedidos') }}">Ver Histórico de Pedidos</a></li>
+                    </ul>                    
+                </div>
+            </div>
+
+            {# Exemplo de outro card para preencher o espaço #}
+            <div class="card shadow-sm mt-4">
+                             
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends "layout.html" %}
+
+{% block title %}Carrinho de Compras{% endblock %}
+
+{% block content %}
+    {% if request.endpoint == 'vendaC.finalizar_venda' %}
+        <h1>Finalizar Compra</h1>
+    {% else %}
+        <h1>Seu Carrinho de Compras</h1>
+    {% endif %}
+
+    {% if carrinho %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Produto</th>
+                    <th>Preço Unitário</th>
+                    <th>Quantidade</th>
+                    <th>Subtotal</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in carrinho %}
+                <tr>
+                    <td>{{ item.produto.nome }}</td>
+                    <td>{{ item.produto.preco }}</td>
+                    <td>
+                        <form method="POST" action="{{ url_for('vendaC.atualizar_quantidade', produto_id=item.produto.id) }}" style="display: inline-block;">
+                            <input type="number" name="quantidade" value="{{ item.quantidade }}" min="1">
+                            <button type="submit" class="btn btn-sm btn-primary">Atualizar</button>
+                        </form>
+                    </td>
+                    <td>{{ item.produto.preco * item.quantidade }}</td>
+                    <td>
+                        <a href="{{ url_for('vendaC.remover_do_carrinho', produto_id=item.produto.id) }}" class="btn btn-sm btn-danger">Remover</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3" style="text-align: right;"><strong>Total:</strong></td>
+                    <td>{{ total }}</td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+
+            <a href="{{ url_for('homeC.home') }}" class="btn btn-secondary">Continuar Comprando</a>
+            <form method="POST" action="{{ url_for('vendaC.processar_compra') }}">
+                <button type="submit" class="btn btn-primary">Finalizar compra</button>
+            </form>
+        
+    {% else %}
+        <p>Seu carrinho está vazio.</p>
+        <a href="{{ url_for('homeC.home') }}" class="btn btn-secondary">Voltar para a loja</a>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,164 @@
+{% extends "layout.html" %}
+{% block title %}Criar Novo Produto{% endblock %}
+{%block alert%}{%endblock%}
+{%block content%}
+<style>
+    .custom-header {
+    background-color: #607D8B; /* Cor de fundo customizada */
+    color: white; /* Cor do texto */
+    text-align: center; /* Alinhamento centralizado */
+    padding: 10px; /* Espaçamento interno */
+} /* <--- Certifique-se de que o 'padding' acima termina com ';' */
+
+.form-group {
+    margin-bottom: 15px; /* Espaçamento entre os grupos de formulário */
+}
+
+label {
+    display: block; /* Faz a label ocupar a linha inteira */
+    margin-bottom: 5px; /* Espaçamento entre a label e o input */
+    font-weight: bold; /* Deixa a label em negrito (opcional) */
+}
+</style>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card mt-5">
+                <div class="custom-header">
+                    <h2 align="center">Criar Novo Produto</h2>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('productC.criar_produto') }}">
+                        <div class="form-group">
+                            <label for="nome">Nome:</label>
+                            <input type="text" class="form-control" id="nome" name="nome" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="descricao">Descrição:</label>
+                            <textarea class="form-control" id="descricao" name="descricao" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="preco">Preço:</label>
+                            <input type="number" step="0.01" class="form-control" id="preco" name="preco" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="codigo_de_barras">Código de Barras:</label>
+                            <input type="text" class="form-control" id="codigo_de_barras" name="codigo_de_barras" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="imagem_url">URL da Imagem:</label>
+                            <input type="url" class="form-control" id="imagem_url" name="imagem_url">
+                        </div>
+                        <div class="form-group">
+                            <label for="categoria">Categoria:</label>
+                            <select class="form-control" id="categoria" name="categoria" onchange="mostrarCampos()">
+                                <option value="1">Vestuário feminino</option>
+                                <option value="2">Vestuário masculino</option>
+                                <option value="3">Calçados</option>
+                                <option value="4">Equipamentos esportivos</option>
+                                <option value="5">Suplementos</option>
+                                <option value="6">Outros</option>
+                            </select>
+                        </div>
+
+                        {# Campos específicos de Vestuário Feminino #}
+                        <div id="vestuario_feminino_campos" style="display: none;">
+                            <div class="form-group">
+                                <label for="tamanho_feminino">Tamanho (Feminino):</label>
+                                <input type="text" class="form-control" name="tamanho_feminino">
+                            </div>
+                            <div class="form-group">
+                                <label for="tecido_feminino">Tecido (Feminino):</label>
+                                <input type="text" class="form-control" name="tecido_feminino">
+                            </div>
+                        </div>
+                        
+                        {# Campos específicos de Vestuário Masculino #}
+                        <div id="vestuario_masculino_campos" style="display: none;">
+                            <div class="form-group">
+                                <label for="tamanho_masculino">Tamanho (Masculino):</label>
+                                <input type="text" class="form-control" name="tamanho_masculino">
+                            </div>
+                            <div class="form-group">
+                                <label for="tecido_masculino">Tecido (Masculino):</label>
+                                <input type="text" class="form-control" name="tecido_masculino">
+                            </div>
+                        </div>
+
+                        {# Campo Cor genérico para Vestuário (Feminino e Masculino) #}
+                        <div id="vestuario_cor_campos" style="display: none;">
+                            <div class="form-group">
+                                <label for="cor_vestuario">Cor (Vestuário):</label>
+                                <input type="text" class="form-control" name="cor_vestuario">
+                            </div>
+                        </div>
+
+                        <div id="calcados_campos" style="display: none;">
+                            <div class="form-group">
+                                <label for="numero">Número:</label>
+                                <input type="number" class="form-control" name="numero_calcado">
+                            </div>
+                            <div class="form-group">
+                                <label for="cor">Cor:</label>
+                                <input type="text" class="form-control" name="cor_calcado">
+                            </div>
+                            <div class="form-group">
+                                <label for="material">Material:</label>
+                                <input type="text" class="form-control" name="material_calcado">
+                            </div>
+                        </div>
+
+                        <div id="equipamentos_campos" style="display: none;">
+                            <div class="form-group">
+                                <label for="tipo">Tipo:</label>
+                                <input type="text" class="form-control" name="tipo_equipamento">
+                            </div>
+                            <div class="form-group">
+                                <label for="marca">Marca:</label>
+                                <input type="text" class="form-control" name="marca_equipamento">
+                            </div>
+                        </div>
+
+                        <div id="suplementos_campos" style="display: none;">
+                            <div class="form-group">
+                                <label for="peso">Peso:</label>
+                                <input type="text" class="form-control" name="peso_suplemento">
+                            </div>
+                            <div class="form-group">
+                                <label for="sabor">Sabor:</label>
+                                <input type="text" class="form-control" name="sabor_suplemento">
+                            </div>
+                            <div class="form-group">
+                                <label for="tipo">Tipo:</label>
+                                <input type="text" class="form-control" name="tipo_suplemento">
+                            </div>
+                        </div>
+                        <div id="outros_campos" style="display: none;">
+                            <div class="form-group">
+                                <label for="detalhes">Detalhes:</label>
+                                <input type="text" class="form-control" name="detalhes_outros">
+                            </div>
+                        </div>
+                           <button type="submit" class="btn btn-primary">Salvar Produto</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function mostrarCampos() {
+        const categoria = document.getElementById('categoria').value;
+        document.getElementById('vestuario_feminino_campos').style.display = categoria === '1' ? 'block' : 'none';
+        document.getElementById('vestuario_masculino_campos').style.display = categoria === '2' ? 'block' : 'none';
+        document.getElementById('vestuario_cor_campos').style.display = (categoria === '1' || categoria === '2') ? 'block' : 'none';
+        document.getElementById('calcados_campos').style.display = categoria === '3' ? 'block' : 'none';
+        document.getElementById('equipamentos_campos').style.display = categoria === '4' ? 'block' : 'none';
+        document.getElementById('suplementos_campos').style.display = categoria === '5' ? 'block' : 'none';
+        document.getElementById('outros_campos').style.display = categoria === '6' ? 'block' : 'none';
+    }
+
+    window.onload = mostrarCampos;
+</script>
+{%endblock%}

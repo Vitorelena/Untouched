@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/static/images/favicon.ico" type="image/x-icon">
+    <link
+        rel="stylesheet"
+        href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+        crossorigin="anonymous"
+    />
+    <link
+        rel="stylesheet"
+        href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+        crossorigin="anonymous"
+    />
+    <title>{% block title %}Home{% endblock %}</title>
+
+    <style>
+        body {
+            display: flex; /* Usa flexbox para o layout principal */
+            min-height: 100vh; /* Garante que o body ocupa a altura total da viewport */
+            margin: 0;
+            background-color: #eeeef0c5; /* Cor de fundo do seu body */
+        }
+
+        .sidebar {
+            width: 250px; /* Largura do menu lateral */
+            flex-shrink: 0; /* Impede que o sidebar encolha */
+            background-color: #333360; /* Cor de fundo do seu navbar */
+            color: white;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.5); /* Sombra para destacá-lo */
+            position: sticky; /* Fixa o sidebar na tela ao rolar */
+            top: 0; /* Fixa no topo */
+            height: 100vh; /* Ocupa a altura total da viewport */
+            overflow-y: auto; /* Adiciona scroll se o conteúdo for muito grande */
+            display: flex; /* Flexbox para alinhar itens do sidebar verticalmente */
+            flex-direction: column;
+        }
+
+        .sidebar .navbar-brand,
+        .sidebar .nav-link {
+            color: white !important; /* Garante a cor do texto */
+            padding: 10px 15px;
+            display: flex; /* Para alinhar logo e texto */
+            align-items: center;
+            text-decoration: none; /* Remover sublinhado de links */
+        }
+
+        .sidebar .navbar-brand img {
+            margin-right: 10px; /* Espaçamento entre logo e texto */
+        }
+
+        .main-content-area { /* Novo contêiner para a topbar e o content-wrapper */
+            flex-grow: 1; /* Faz esta área ocupar o espaço restante */
+            display: flex;
+            flex-direction: column; /* Para empilhar topbar e content-wrapper verticalmente */
+        }
+
+        .topbar {
+            background-color: #4a4a80; /* Cor de fundo da sua barra superior */
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between; /* Espaço entre Home e mensagem de boas-vindas */
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Sombra para destacá-lo */
+            height: 60px; /* Altura fixa para a topbar */
+            flex-shrink: 0; /* Impede que a topbar encolha */
+        }
+
+        .topbar .welcome-section { /* Seção esquerda da topbar */
+            display: flex;
+            align-items: center;
+            gap: 15px; /* Espaçamento entre os itens */
+        }
+
+        .topbar .welcome-message { /* Mensagem de boas-vindas */
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+
+        .topbar .home-link,
+        .topbar .cart-link, /* Estilo para o link do carrinho */
+        .topbar .auth-link, /* Estilo para links de autenticação na topbar */
+        .topbar .my-account-link { /* Novo estilo para "Minha Conta" */
+            color: white !important;
+            text-decoration: none;
+            font-size: 1.2em;
+            display: flex;
+            align-items: center;
+            transition: color 0.2s ease-in-out;
+        }
+
+        .topbar .home-link:hover,
+        .topbar .cart-link:hover,
+        .topbar .auth-link:hover,
+        .topbar .my-account-link:hover {
+            color: #ccc !important; /* Efeito hover */
+        }
+
+        .topbar .home-link i,
+        .topbar .cart-link i {
+            margin-right: 5px;
+        }
+
+        .topbar .auth-info { /* Seção direita da topbar (Olá, usuário + Logout/Login) */
+            display: flex;
+            align-items: center;
+            gap: 10px; /* Espaçamento entre nome de usuário e logout */
+        }
+        
+        .content-wrapper {
+            flex-grow: 1; /* Faz o conteúdo principal ocupar o espaço restante */
+            padding: 20px;
+        }
+
+        /* Oculta o navbar-toggler, pois o menu estará sempre aberto */
+        .navbar-toggler {
+            display: none !important;
+        }
+
+        /* Remova ou ajuste o navbar superior se ele não for mais necessário */
+        .navbar-top {
+             display: none;
+        }
+
+        /* Estilos adicionais movidos dos templates filho */
+        .image-cell {
+            width: 80px;
+            height: 80px;
+            text-align: center;
+            vertical-align: middle;
+            border: 1px solid #ddd;
+            padding: 5px;
+        }
+
+        .image-cell .product-image {
+            max-width: 100px;
+            max-height: 80px;
+            width: auto;
+            height: auto;
+            display: block;
+            margin: auto;
+            object-fit: contain;
+        }
+
+        .custom-header {
+            background-color: #607D8B;
+            color: white;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .product-card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s ease-in-out;
+            height: 100%;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .product-card img.product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+            border-bottom: 1px solid #eee;
+        }
+
+        .product-card .content {
+            padding: 15px;
+            text-align: left;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .product-card h5.card-title {
+            font-size: 1.2em;
+            margin-top: 0;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .product-card p.description {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 10px;
+            line-height: 1.4;
+            max-height: 3.8em;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+        }
+
+        .product-card .price {
+            font-size: 1.4em;
+            color: #007bff;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .product-card .category {
+            font-size: 0.8em;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .add-to-cart-form {
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            align-items: flex-start;
+        }
+
+        .add-to-cart-form input[type="number"] {
+            width: 80px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .add-to-cart-form input[type="number"]::-webkit-outer-spin-button,
+        .add-to-cart-form input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .add-to-cart-button {
+            background-color: #28a745;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background-color 0.2s ease-in-out;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .add-to-cart-button:hover {
+            background-color: #218838;
+        }
+
+        .create-product-link {
+            display: block;
+            text-align: center;
+            margin-top: 30px;
+            font-size: 1.1em;
+            color: #007bff;
+            text-decoration: none;
+            padding: 10px 20px;
+            border: 1px solid #007bff;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+            max-width: 200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .create-product-link:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        @media (max-width: 768px) {
+            .product-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+        }
+
+        @media (max-width: 480px) {
+            .product-grid {
+                grid-template-columns: 1fr;
+            }
+            .product-card {
+                margin-left: 10px;
+                margin-right: 10px;
+            }
+        }
+    </style>
+
+</head>
+<body>
+    <div class="sidebar">
+        <div class="navbar-nav">
+            <a class="navbar-brand" href="{{ url_for('homeC.home') }}">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Nossa Logo" height="30">
+                <span style="font-size: 1.2em;">Untouched</span>
+            </a>
+            {# Removido: Links de login/logout/signup movidos para a topbar #}
+
+            {% block sidebar_specific_content %}
+                {# Este bloco será preenchido pelos templates filhos #}
+                {# Exemplo de links que aparecem para todos que estendem o layout, se não forem sobrescritos #}
+                {% if current_user.is_authenticated and current_user.tipo_usuario >= 5 %}
+                    <a class="nav-item nav-link" href="{{ url_for('productC.criar_produto') }}">Criar Produto</a>
+                {% endif %}
+                {% if current_user.is_authenticated%}
+                    {%if current_user.tipo_usuario > 2%}
+                        <a class="nav-item nav-link" href="{{ url_for('homeC.home_funcionario') }}">Minha Conta</a>  
+                    {%else%}
+                        <a class="nav-item nav-link" href="{{ url_for('homeC.home_cliente') }}">Minha Conta</a>  
+                    {%endif%}
+                {%else%}
+                    <a class="nav-item nav-link" href="{{ url_for('loginC.login_page') }}">Login</a>
+                    <a class="nav-item nav-link" href="{{ url_for('signC.sign_up') }}">Sign Up</a>
+                {% endif %}
+                
+            {% endblock %}
+        </div>
+    </div>
+
+    <div class="main-content-area">
+        <div class="topbar">
+            <div class="welcome-section">
+                {# CARRINHO DE COMPRAS #}
+                {% if current_user.is_authenticated %}
+                {%if current_user.is_authenticated and current_user.tipo_usuario == 2%}
+                    <a class="cart-link" href="{{ url_for('vendaC.carrinho') }}">
+                        <i class="fa fa-shopping-cart"></i> Carrinho
+                    </a>
+                {%endif%}
+                {% if current_user.is_authenticated and current_user.tipo_usuario > 3 %}
+                    <a class="cart-link" href="{{ url_for('vendaC.carrinho_venda') }}">
+                        <i class="fa fa-money"></i> Realizar Venda
+                    </a>
+                {% endif %}
+                {%endif%}
+                {# HOME LINK #}
+                <a class="home-link" href="{{ url_for('homeC.home') }}">
+                    <i class="fa fa-home"></i> Home
+                </a>
+            </div>
+            
+            <div class="auth-info">
+                {# INFORMAÇÕES DE AUTENTICAÇÃO #}
+                {% if current_user.is_authenticated %}
+                    
+                    <a class="auth-link" href="{{ url_for('loginC.logout') }}">Logout</a>
+                    <span class="welcome-message">Olá, {{ current_user.nome }}</span>
+                    {# Link "Minha Conta" para usuário logado #}
+                   
+                {% else %}
+                    <a class="auth-link" href="{{ url_for('loginC.login_page') }}">Login</a>
+                    <a class="auth-link" href="{{ url_for('signC.sign_up') }}">Sign Up</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="content-wrapper">
+          {% block content %}
+          {% endblock %}
+        </div>
+    </div>
+
+    <script
+        src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"
+    ></script>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"
+    ></script>
+    <script
+        src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"
+    ></script>
+
+</body>
+</html>

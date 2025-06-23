@@ -1,0 +1,149 @@
+{% extends "layout.html" %}
+
+{% block title %}Editar Produto{% endblock %}
+{% block alert %}
+    {# Mensagens print do Flask #}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="container mt-3">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Editar Produto #{{ produto.id }}</h2>
+    <form method="POST" action="{{ url_for('productC.editar_produto', produto_id=produto.id) }}">
+        {# Campos comuns a todos os produtos #}
+        <div class="form-group">
+            <label for="nome">Nome:</label>
+            <input type="text" class="form-control" id="nome" name="nome" value="{{ produto.nome }}" required>
+        </div>
+        <div class="form-group">
+            <label for="descricao">Descrição:</label>
+            <textarea class="form-control" id="descricao" name="descricao" rows="3">{{ produto.descricao }}</textarea>
+        </div>
+        <div class="form-group">
+            <label for="preco">Preço:</label>
+            <input type="number" step="0.01" class="form-control" id="preco" name="preco" value="{{ "%.2f" | format(produto.preco | float) }}" required>
+        </div>
+        <div class="form-group">
+            <label for="codigo_de_barras">Código de Barras:</label>
+            <input type="text" class="form-control" id="codigo_de_barras" name="codigo_de_barras" value="{{ produto.codigo_de_barras }}" required>
+        </div>
+        <div class="form-group">
+            <label for="imagem_url">URL da Imagem:</label>
+            <input type="url" class="form-control" id="imagem_url" name="imagem_url" value="{{ produto.imagem_url }}">
+        </div>
+
+        {# Campo de Categoria - Importante para acionar JS #}
+        <div class="form-group">
+            <label for="categoria">Categoria:</label>
+            <select class="form-control" id="categoria" name="categoria" onchange="mostrarCampos()">
+                <option value="1" {% if produto.categoria == '1' %}selected{% endif %}>Vestuário feminino</option>
+                <option value="2" {% if produto.categoria == '2' %}selected{% endif %}>Vestuário masculino</option>
+                <option value="3" {% if produto.categoria == '3' %}selected{% endif %}>Calçados</option>
+                <option value="4" {% if produto.categoria == '4' %}selected{% endif %}>Equipamentos esportivos</option>
+                <option value="5" {% if produto.categoria == '5' %}selected{% endif %}>Suplementos</option>
+                <option value="6" {% if produto.categoria == '6' %}selected{% endif %}>Outros</option>
+            </select>
+        </div>
+
+        {# Campos específicos de Vestuário #}
+        <div id="vestuario_campos" style="display: none;">
+            <div class="form-group">
+                <label for="tamanho_vestuario">Tamanho:</label>
+                <input type="text" class="form-control" name="tamanho_vestuario" 
+                       value="{% if produto.categoria == '1' %}{{ produto.tamanho_feminino if produto.tamanho_feminino is defined else '' }}{% elif produto.categoria == '2' %}{{ produto.tamanho_masculino if produto.tamanho_masculino is defined else '' }}{% endif %}">
+            </div>
+            <div class="form-group">
+                <label for="cor_vestuario">Cor:</label>
+                <input type="text" class="form-control" name="cor_vestuario" value="{{ produto.cor if produto.cor is defined else '' }}">
+            </div>
+            <div class="form-group">
+                <label for="tecido_vestuario">Tecido:</label>
+                <input type="text" class="form-control" name="tecido_vestuario" 
+                       value="{% if produto.categoria == '1' %}{{ produto.tecido_feminino if produto.tecido_feminino is defined else '' }}{% elif produto.categoria == '2' %}{{ produto.tecido_masculino if produto.tecido_masculino is defined else '' }}{% endif %}">
+            </div>
+        </div>
+
+        {# Campos específicos de Calçados #}
+        <div id="calcados_campos" style="display: none;">
+            <div class="form-group">
+                <label for="numero_calcado">Número:</label>
+                <input type="number" class="form-control" name="numero_calcado" value="{{ produto.numero if produto.numero is defined else '' }}">
+            </div>
+            <div class="form-group">
+                <label for="cor_calcado">Cor:</label>
+                <input type="text" class="form-control" name="cor_calcado" value="{{ produto.cor if produto.cor is defined else '' }}">
+            </div>
+            <div class="form-group">
+                <label for="material_calcado">Material:</label>
+                <input type="text" class="form-control" name="material_calcado" value="{{ produto.material if produto.material is defined else '' }}">
+            </div>
+        </div>
+
+        {# Campos específicos de Equipamentos #}
+        <div id="equipamentos_campos" style="display: none;">
+            <div class="form-group">
+                <label for="tipo_equipamento">Tipo:</label>
+                <input type="text" class="form-control" name="tipo_equipamento" value="{{ produto.tipo_equipamento if produto.tipo_equipamento is defined else '' }}">
+            </div>
+            <div class="form-group">
+                <label for="marca_equipamento">Marca:</label>
+                <input type="text" class="form-control" name="marca_equipamento" value="{{ produto.marca if produto.marca is defined else '' }}">
+            </div>
+        </div>
+
+        {# Campos específicos de Suplementos #}
+        <div id="suplementos_campos" style="display: none;">
+            <div class="form-group">
+                <label for="peso_suplemento">Peso:</label>
+                <input type="text" class="form-control" name="peso_suplemento" value="{{ produto.peso if produto.peso is defined else '' }}">
+            </div>
+            <div class="form-group">
+                <label for="sabor_suplemento">Sabor:</label>
+                <input type="text" class="form-control" name="sabor_suplemento" value="{{ produto.sabor if produto.sabor is defined else '' }}">
+            </div>
+            <div class="form-group">
+                <label for="tipo_suplemento">Tipo:</label>
+                <input type="text" class="form-control" name="tipo_suplemento" value="{{ produto.tipo_suplemento if produto.tipo_suplemento is defined else '' }}">
+            </div>
+        </div>
+        
+        {# Campos específicos de Outros #}
+        <div id="outros_campos" style="display: none;">
+            <div class="form-group">
+                <label for="detalhes_outros">Detalhes:</label>
+                <input type="text" class="form-control" name="detalhes_outros" value="{{ produto.detalhes if produto.detalhes is defined else '' }}">
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+        <a href="{{ url_for('productC.gerenciar_produtos') }}" class="btn btn-secondary ml-2">Cancelar</a>
+    </form>
+</div>
+
+<script>
+    function mostrarCampos() {
+        const categoria = document.getElementById('categoria').value;
+        document.getElementById('vestuario_campos').style.display = (categoria === '1' || categoria === '2') ? 'block' : 'none';
+        document.getElementById('calcados_campos').style.display = categoria === '3' ? 'block' : 'none';
+        document.getElementById('equipamentos_campos').style.display = categoria === '4' ? 'block' : 'none';
+        document.getElementById('suplementos_campos').style.display = categoria === '5' ? 'block' : 'none';
+        document.getElementById('outros_campos').style.display = categoria === '6' ? 'block' : 'none';
+    }
+
+    // Aciona a função no carregamento da página para exibir os campos da categoria atual
+    window.onload = mostrarCampos;
+</script>
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends 'layout.html' %}
+
+{% block title %}Desligar Funcionário{% endblock %}
+{% block alert %}
+    {# Mensagens print do Flask #}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="container mt-3">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">Desligar Funcionário do Sistema</h2>
+    <p class="text-center text-muted">Selecione um funcionário abaixo para desativar sua conta. Esta ação é irreversível.</p>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Login</th>
+                    <th>Cargo</th>
+                    <th>Nível</th>
+                    <th>Ação</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for funcionario in funcionarios %}
+                <tr>
+                    <td>{{ funcionario.id }}</td>
+                    <td>{{ funcionario.nome }}</td>
+                    <td>{{ funcionario.login }}</td>
+                    <td>
+                        {% if funcionario.tipo_usuario == 4 %}Staff
+                        {% elif funcionario.tipo_usuario == 5 %}SubGerente
+                        {% elif funcionario.tipo_usuario == 6 %}Gerente
+                        {% else %}Func. Desconhecido ({{ funcionario.tipo_usuario }})
+                        {% endif %}
+                    </td>
+                    <td>{{ funcionario.nivel if funcionario.nivel is not none else 'N/A' }}</td>
+                    <td>
+                        <form method="POST" action="{{ url_for('homeC.desligar_funcionario_action', funcionario_id=funcionario.id) }}" 
+                              onsubmit="return confirm('Tem certeza que deseja desligar o funcionário {{ funcionario.nome }}? Esta ação é irreversível e removerá todos os dados de vendas associados!');">
+                            <input type="hidden" name="funcionario_id" value="{{ funcionario.id }}">
+                            <button type="submit" class="btn btn-sm btn-danger">Desligar</button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="text-center">Nenhum funcionário elegível para desligamento.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="text-center mt-4">
+        <a href="{{ url_for('homeC.home_funcionario') }}" class="btn btn-secondary">Voltar ao Painel</a>
+        <a href="{{ url_for('homeC.gerenciar_funcionarios') }}" class="btn btn-info">Ver Todos os Funcionários</a>
+    </div>
+
+</div>
+{% endblock %}

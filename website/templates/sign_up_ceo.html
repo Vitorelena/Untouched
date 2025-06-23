@@ -1,0 +1,64 @@
+{% extends 'layout.html' %}
+
+{% block title %}Cadastro de CEO{% endblock %}
+{% block alert %}
+    {# Mensagens print do Flask #}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="container mt-3">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header text-center bg-primary text-white">
+                    <h3 class="mb-0">Cadastrar CEO</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('signC.sign_up_ceo') }}">
+                        <div class="form-group">
+                            <label for="nome">Nome Completo:</label>
+                            <input type="text" class="form-control" id="nome" name="nome" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cpf">CPF:</label>
+                            <input type="text" class="form-control" id="cpf" name="cpf" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="matricula">Matrícula:</label>
+                            <input type="text" class="form-control" id="matricula" name="matricula" required>
+                            <small class="form-text text-muted">A matrícula do CEO (se aplicável).</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="login">Login (Nome de Usuário):</label>
+                            <input type="text" class="form-control" id="login" name="login" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="senha">Senha:</label>
+                            <input type="password" class="form-control" id="senha" name="senha" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirm_senha">Confirmar Senha:</label>
+                            <input type="password" class="form-control" id="confirm_senha" name="confirm_senha" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Criar Conta de CEO</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

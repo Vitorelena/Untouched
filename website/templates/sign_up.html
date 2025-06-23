@@ -1,0 +1,111 @@
+{% extends "layout.html" %}
+<style>
+    /* ATENÇÃO: MOVA ESTE BLOCO <style> INTEIRO PARA DENTRO DA TAG <head> DO SEU ARQUIVO layout.html */
+    /* Ele não deve permanecer aqui */
+    .custom-header {
+        background-color: #607D8B; /* Cor de fundo customizada */
+        color: white; /* Cor do texto */
+        text-align: center; /* Alinhamento centralizado */
+        padding: 10px; /* Espaçamento interno */
+    }
+
+    .form-group {
+        margin-bottom: 15px; /* Espaçamento entre os grupos de formulário */
+    }
+
+    label {
+        display: block; /* Faz a label ocupar a linha inteira */
+        margin-bottom: 5px; /* Espaçamento entre a label e o input */
+        font-weight: bold; /* Deixa a label em negrito (opcional) */
+    }
+</style>
+{% block title %}Sign Up{% endblock %}
+{%block alert%}{%endblock%}
+{% block content %}
+    <section class="hero">
+        <h2>Sign up!</h2>
+    </section>
+    <form method="POST" action="{{ url_for('signC.sign_up') }}"> {# Adicionado action #}
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="card mt-5">
+                        <div class="custom-header">
+                            <h3 align="center">Sign Up</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="nome">Nome</label>
+                                <input type="text" class="form-control" name="nome" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="cpf">CPF</label>
+                                <input type="text" class="form-control" name="cpf" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="login">Login</label>
+                                <input type="text" class="form-control" name="login" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="senha">Senha</label>
+                                <input type="password" class="form-control" id="senha" name="senha" required>
+                            </div>
+                            {# ADICIONADO: Campo para Confirmar Senha #}
+                            <div class="form-group">
+                                <label for="confirm_senha">Confirmar Senha</label>
+                                <input type="password" class="form-control" id="confirm_senha" name="confirm_senha" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="tipo_usuario">Tipo de Usuário</label>
+                                <select id="tipo_usuario" class="form-control" name="tipo_usuario" onchange="mostrarCamposFuncionario()">
+                                    <option value="2">Cliente</option>
+                                    <option value="3">Funcionário</option>
+                                </select>
+                            </div>
+                            <div id="campos_funcionario" style="display: none;">
+                                <div class="form-group">
+                                    <label for="matricula">Matrícula:</label>
+                                    <input type="text" class="form-control" id="matricula" name="matricula"> {# ID ADICIONADO #}
+                                </div>
+                                <div class="form-group">
+                                    <label for="nivel_funcionario">Nível do Funcionário:</label>
+                                    <select id="nivel_funcionario" class="form-control" name="nivel_funcionario">
+                                        <option value="1">Staff</option>
+                                        <option value="2">Sub-Gerente</option>
+                                        <option value="3">Gerente</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">Enviar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <script>
+        function mostrarCamposFuncionario() {
+            var tipoUsuario = document.getElementById("tipo_usuario").value;
+            var camposFuncionario = document.getElementById("campos_funcionario");
+            var matriculaInput = document.getElementById("matricula");
+            var nivelFuncionarioSelect = document.getElementById("nivel_funcionario");
+
+            if (tipoUsuario == 3) {
+                camposFuncionario.style.display = "block";
+                // Tornar os campos de funcionário obrigatórios quando visíveis
+                matriculaInput.required = true;
+                nivelFuncionarioSelect.required = true;
+            } else {
+                camposFuncionario.style.display = "none";
+                // Tornar os campos de funcionário não obrigatórios quando ocultos
+                matriculaInput.required = false;
+                nivelFuncionarioSelect.required = false;
+                // Opcional: Limpar os valores dos campos ocultos para não enviar dados indesejados
+                // matriculaInput.value = '';
+                // nivelFuncionarioSelect.value = '1'; // Ou outra opção padrão
+            }
+        }
+        // Chamar a função na carga da página caso já haja uma seleção padrão (se houver)
+        window.onload = mostrarCamposFuncionario;
+    </script>
+{% endblock %}

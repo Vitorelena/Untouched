@@ -1,0 +1,25 @@
+{% extends 'layout.html' %}
+
+{% block title %}Histórico de Compras{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Histórico de Compras</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Data da Compra</th>
+                <th>Funcionário Responsável</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in historico %}
+            <tr>
+                <td>{{ item.data_venda.strftime('%d/%m/%Y %H:%M') }}</td>
+                <td>{{ item.nome_funcionario }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
