@@ -14,3 +14,5 @@ Untouched é um sistema web completo para gerenciamento de vendas, desenvolvido 
 -  Diagrama UML do sistema disponível neste repositório
 
 Observação) Todos os commits estão sendo realizados no dia 23/06/2025 em virtude da preferência de trabalho feito de forma local para evitar que um commit inadequado compromotesse a integridade do repositório.
+
+Foram feitas diversas tentativas de commit utilizando o perfil do André Luiz e do João Francisco, vide figura anexada, mas a configuração do computador (projeto desenvolvido em um dos computadores do laboratório de geotecnia e transporte da escola de engenharia) manteve as configurações iniciais do github desktop e não foi possível conectar um novo perfil(MAntendo os commits em nome da Vitória), entretanto, nos commits correspondentes haverá comentários salientando o aluno responsável pelo código.
