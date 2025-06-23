@@ -12,3 +12,5 @@ Untouched é um sistema web completo para gerenciamento de vendas, desenvolvido 
 -  Banco de dados relacional com SQLite
 -  Redirecionamento condicional e controle de permissões hierárquico
 -  Diagrama UML do sistema disponível neste repositório
+
+Observação) Todos os commits estão sendo realizados no dia 23/06/2025 em virtude da preferência de trabalho feito de forma local para evitar que um commit inadequado compromotesse a integridade do repositório.
